@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Understanding Attention</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Understanding Attention: A Beginner-Friendly Guide</h1>
+
+<p>
+This blog post explains the attention mechanism introduced in
+"Attention Is All You Need" (Vaswani et al., 2017).
+</p>
+
+<h2>Why Attention?</h2>
+
+<p>
+Traditional RNNs process information sequentially.
+As sequences become longer, remembering important information
+becomes difficult.
+Attention solves this by allowing every token to directly
+interact with every other token.
+</p>
+
+<h2>Query, Key and Value</h2>
+
+<p>
+Imagine searching for a book in a library.
+</p>
+
+<ul>
+<li>Query = what you are looking for</li>
+<li>Key = label of each book</li>
+<li>Value = information inside the book</li>
+</ul>
+
+<p>
+The attention mechanism compares the query against all keys
+and retrieves the most relevant values.
+</p>
+
+<img src="images/attention_diagram.png" width="700">
+
+<h2>Scaled Dot Product Attention</h2>
+
+<p>
+Attention is computed using:
+</p>
+
+<p>
+Attention(Q,K,V) = softmax(QKᵀ / √dₖ)V
+</p>
+
+<h3>Why divide by √dₖ?</h3>
+
+<p>
+Without scaling, dot products become very large for high-dimensional vectors.
+The softmax then becomes extremely peaked and gradients become unstable.
+Scaling keeps training stable.
+</p>
+
+<h2>Multi-Head Attention</h2>
+
+<p>
+Instead of using a single attention mechanism,
+Transformers use multiple attention heads.
+</p>
+
+<p>
+Different heads can focus on different relationships:
+</p>
+
+<ul>
+<li>Object relationships</li>
+<li>Long-range dependencies</li>
+<li>Syntax</li>
+<li>Semantic meaning</li>
+</ul>
+
+<h2>Positional Encoding</h2>
+
+<p>
+Transformers have no recurrence.
+They process all tokens simultaneously.
+Positional encodings inject information about token order.
+</p>
+
+<h2>Connection to Vision Transformers</h2>
+
+<p>
+In NLP, tokens represent words.
+In Vision Transformers, tokens represent image patches.
+The same attention mechanism is reused almost unchanged.
+</p>
+
+<h2>Conclusion</h2>
+
+<p>
+Attention enables direct interactions between tokens,
+making it possible to model long-range dependencies efficiently.
+This idea became the foundation of modern language models
+and Vision Transformers.
+</p>
+
+</div>
+
+</body>
+</html>
