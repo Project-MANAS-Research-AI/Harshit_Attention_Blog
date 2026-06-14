@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Understanding Attention</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Attention: A Beginner-Friendly Guide</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -12,99 +16,241 @@
 <h1>Understanding Attention: A Beginner-Friendly Guide</h1>
 
 <p>
-This blog post explains the attention mechanism introduced in
-"Attention Is All You Need" (Vaswani et al., 2017).
+Attention is one of the most influential ideas in modern deep learning.
+It powers large language models such as ChatGPT, Gemini and Claude,
+and it is also used in Vision Transformers for computer vision tasks.
+This blog explains the core idea behind attention and develops an intuition
+for Query, Key and Value vectors without assuming advanced mathematical knowledge.
 </p>
 
-<h2>Why Attention?</h2>
+<hr>
+
+<h2>Why Was Attention Needed?</h2>
 
 <p>
-Traditional RNNs process information sequentially.
-As sequences become longer, remembering important information
-becomes difficult.
-Attention solves this by allowing every token to directly
-interact with every other token.
+Before Transformers, sequence modeling was dominated by recurrent neural networks (RNNs)
+and LSTMs. These models process information one token at a time.
+Although effective, they often struggle to capture long-range dependencies.
 </p>
 
-<h2>Query, Key and Value</h2>
+<p>
+For example, consider the sentence:
+</p>
+
+<blockquote>
+"The cat sat on the mat because it was tired."
+</blockquote>
 
 <p>
-Imagine searching for a book in a library.
+To understand the meaning of "it", the model must connect it back to "cat".
+Attention allows every word to directly interact with every other word,
+making these relationships easier to learn.
+</p>
+
+<hr>
+
+<h2>The Intuition Behind Query, Key and Value</h2>
+
+<p>
+The concepts of Query, Key and Value (Q, K, V) are central to attention.
+A useful analogy is a library.
 </p>
 
 <ul>
-<li>Query = what you are looking for</li>
-<li>Key = label of each book</li>
-<li>Value = information inside the book</li>
+<li><strong>Query:</strong> What information am I looking for?</li>
+<li><strong>Key:</strong> What information do I contain?</li>
+<li><strong>Value:</strong> What information should I provide if selected?</li>
 </ul>
 
 <p>
-The attention mechanism compares the query against all keys
-and retrieves the most relevant values.
+Each token in a sentence is transformed into three vectors:
+a Query vector, a Key vector and a Value vector.
+The Query is compared against all Keys.
+The strongest matches determine which Values contribute most to the output.
 </p>
 
-<img src="images/attention_diagram.png" width="700">
+<h3>My Q-K-V Diagram</h3>
 
-<h2>Scaled Dot Product Attention</h2>
+<img src="images/qkv_diagram.png" width="700">
 
 <p>
-Attention is computed using:
+The diagram above illustrates how attention uses Query, Key and Value vectors
+to compute the final representation of a token.
+</p>
+
+<hr>
+
+<h2>Where Do Q, K and V Come From?</h2>
+
+<p>
+Each token is first converted into an embedding vector.
+The Transformer then applies three learned linear transformations:
+</p>
+
+<ul>
+<li>One projection generates Queries.</li>
+<li>One projection generates Keys.</li>
+<li>One projection generates Values.</li>
+</ul>
+
+<p>
+Although all three originate from the same embedding,
+they learn different roles during training.
+</p>
+
+<hr>
+
+<h2>Scaled Dot-Product Attention</h2>
+
+<p>
+The attention mechanism is computed using:
+</p>
+
+<p style="text-align:center;font-size:28px;">
+Attention(Q,K,V) = softmax(QK<sup>T</sup>/√d<sub>k</sub>)V
+</p>
+
+<h3>Step 1: Compute Similarities</h3>
+
+<p>
+The dot product between Queries and Keys measures similarity.
+A larger value indicates a stronger relationship.
+</p>
+
+<h3>Step 2: Apply Softmax</h3>
+
+<p>
+Softmax converts similarity scores into probabilities that sum to one.
+This determines how much attention should be assigned to each token.
+</p>
+
+<h3>Step 3: Combine Values</h3>
+
+<p>
+The attention weights are used to compute a weighted average of Value vectors.
+The result becomes the new representation of the token.
+</p>
+
+<hr>
+
+<h2>Why Divide by √d<sub>k</sub>?</h2>
+
+<p>
+As vector dimensionality increases, dot products naturally become larger.
+Large values can cause the softmax function to become extremely peaked,
+which leads to unstable gradients during training.
 </p>
 
 <p>
-Attention(Q,K,V) = softmax(QKᵀ / √dₖ)V
+Dividing by √d<sub>k</sub> normalizes the scale of the scores,
+keeping training stable and improving optimization.
 </p>
 
-<h3>Why divide by √dₖ?</h3>
-
-<p>
-Without scaling, dot products become very large for high-dimensional vectors.
-The softmax then becomes extremely peaked and gradients become unstable.
-Scaling keeps training stable.
-</p>
+<hr>
 
 <h2>Multi-Head Attention</h2>
 
 <p>
-Instead of using a single attention mechanism,
-Transformers use multiple attention heads.
+Instead of using a single attention operation,
+Transformers use multiple attention heads in parallel.
 </p>
 
 <p>
-Different heads can focus on different relationships:
+Each head learns a different type of relationship.
 </p>
 
 <ul>
-<li>Object relationships</li>
-<li>Long-range dependencies</li>
-<li>Syntax</li>
-<li>Semantic meaning</li>
+<li>One head may focus on nearby words.</li>
+<li>Another may capture grammatical structure.</li>
+<li>Another may identify semantic relationships.</li>
+<li>Another may focus on long-range dependencies.</li>
 </ul>
+
+<p>
+The outputs of all heads are concatenated and combined,
+allowing the model to capture richer information than a single attention mechanism.
+</p>
+
+<hr>
 
 <h2>Positional Encoding</h2>
 
 <p>
-Transformers have no recurrence.
-They process all tokens simultaneously.
-Positional encodings inject information about token order.
+Unlike RNNs, Transformers process all tokens simultaneously.
+This means they have no built-in understanding of word order.
 </p>
-
-<h2>Connection to Vision Transformers</h2>
 
 <p>
-In NLP, tokens represent words.
-In Vision Transformers, tokens represent image patches.
-The same attention mechanism is reused almost unchanged.
+To solve this problem, positional encodings are added to token embeddings.
+The original Transformer uses sinusoidal functions with different frequencies,
+allowing the model to encode both absolute and relative positions.
 </p>
-
-<h2>Conclusion</h2>
 
 <p>
-Attention enables direct interactions between tokens,
-making it possible to model long-range dependencies efficiently.
-This idea became the foundation of modern language models
-and Vision Transformers.
+Without positional encodings, the sentence:
 </p>
+
+<blockquote>
+"Dog bites man"
+</blockquote>
+
+<p>
+would look identical to:
+</p>
+
+<blockquote>
+"Man bites dog"
+</blockquote>
+
+<p>
+even though the meanings are completely different.
+</p>
+
+<hr>
+
+<h2>Attention in Vision Transformers</h2>
+
+<p>
+The same attention mechanism used in NLP can also be applied to images.
+Vision Transformers divide an image into small patches.
+Each patch is treated as a token.
+</p>
+
+<p>
+Self-attention then determines which image regions are important for classification.
+For example, when recognizing a bird,
+the model may focus on the beak, wings and body while ignoring much of the background.
+</p>
+
+<p>
+This reuse of attention is one reason Transformers have become successful
+across many domains.
+</p>
+
+<hr>
+
+<h2>Key Takeaways</h2>
+
+<ul>
+<li>Attention allows every token to interact with every other token.</li>
+<li>Queries search for relevant information.</li>
+<li>Keys describe available information.</li>
+<li>Values contain the actual information used to build outputs.</li>
+<li>Scaling by √d<sub>k</sub> stabilizes training.</li>
+<li>Multi-head attention learns multiple relationships simultaneously.</li>
+<li>Positional encoding provides information about token order.</li>
+<li>The same mechanism is used in Vision Transformers.</li>
+</ul>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+<li>Vaswani et al. (2017), Attention Is All You Need</li>
+<li>The Illustrated Transformer – Jay Alammar</li>
+<li>PyTorch Documentation</li>
+</ul>
 
 </div>
 
